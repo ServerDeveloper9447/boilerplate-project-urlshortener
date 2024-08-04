@@ -28,6 +28,7 @@ app.get('/api/shorturl/:url',(req,res) => {
 app.post('/api/shorturl',(req,res) => {
   try {
   const url = new URL(req.body.url)
+  if(!['http:','https:'].includes(url.protocol)) throw new Error("invalid url")
   dns.lookup(url.host,(err,add) => {
     if(!add) return res.status(400).send({ error: 'invalid url' });
     const size = db.size+1
@@ -35,7 +36,7 @@ app.post('/api/shorturl',(req,res) => {
     res.send({ original_url : req.body.url, short_url : size})
   })
   } catch(err) {
-    res.status(400).send({ error: 'invalid url' });
+    res.send({ error: 'invalid url' });
   }
 })
 
