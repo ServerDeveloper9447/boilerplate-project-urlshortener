@@ -22,7 +22,7 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 app.get('/api/shorturl/:url',(req,res) => {
-  if(!db.has(req.params.url)) return res.sendStatus(404);
+  if(!db.has(req.params.url)) return res.send(db.get(req.params.url));
   res.redirect(db.get(req.params.url))
 })
 app.post('/api/shorturl',(req,res) => {
@@ -30,8 +30,8 @@ app.post('/api/shorturl',(req,res) => {
   const url = new URL(req.body.url)
   dns.lookup(url.host,(err,add) => {
     if(!add) return res.status(400).send({ error: 'invalid url' });
-    const size = db.size + 1
-    db.set(size, req.body.url)
+    const size = db.size+1
+    db.set(String(size), req.body.url)
     res.send({ original_url : req.body.url, short_url : size})
   })
   } catch(err) {
